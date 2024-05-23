@@ -1,59 +1,61 @@
-import React from 'react';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { useContext } from 'react';//A hook to access the context.
-import DataContext from './context/DataContext'; //The context referred to above that provides state and functions related to posts.
+import { useContext } from 'react';
+import DataContext from './context/DataContext';
 
+const EditPost = () => {
+    const { posts, handleEdit, editBody, setEditBody, editTitle, setEditTitle } = useContext(DataContext);
+    const { id } = useParams();
+    const post = posts.find(post => post.id.toString() === id);
 
-const EditPost = () => { //Note that we arent destructuring the props as the parameters for the functional component anymore, instead referencing such props/values below when calling useContext to access them from the DataContext file
-  const {posts, handleEdit, editBody, setEditBody, editTitle, setEditTitle} = useContext(DataContext);
-  const {id} = useParams();
-  const post = posts.find(post => (post.id).toString() === id);  
-
-  useEffect(() => {
-    if (post) {
-        setEditTitle(post.title);
-        setEditBody(post.body);
-    }
-
-  }, [post, setEditTitle, setEditBody])
-  
-  return (
-    <main className='NewPost'>
-        {editTitle &&
-            <>
-                <h2>Edit Post</h2>
-                <form className='newPostForm' onSubmit={(e) => e.preventDefault()}>
-                    <label htmlFor='postTitle'>Title:</label>
-                    <input
-                    id="postTitle"
-                    type='text'
-                    required
-                    value={editTitle}
-                    onChange={(e) => setEditTitle(e.target.value)}
-                    />
-                    <label htmlFor='postBody'>Post:</label>
-                    <textarea
-                    id='postBody'
-                    required
-                    value={editBody}
-                    onChange={(e) => setEditBody(e.target.value)}
-                    />
-                    <button type='submit' onClick={() => handleEdit(post.id)}>Submit</button>
-                </form>
-            </>
+    useEffect(() => {
+        if (post) {
+            setEditTitle(post.title);
+            setEditBody(post.body);
         }
-        {!editTitle &&
+    }, [post, setEditTitle, setEditBody])
+
+    const handleSubmit = () => {
+        if (post) {
+            handleEdit(post.id);
+        }
+    };
+
+    return (
+        <main className='NewPost'>
+            {post ? (
+                <>
+                    <h2>Edit Post</h2>
+                    <form className='newPostForm' onSubmit={(e) => e.preventDefault()}>
+                        <label htmlFor='postTitle'>Title:</label>
+                        <input
+                            id="postTitle"
+                            type='text'
+                            required
+                            value={editTitle}
+                            onChange={(e) => setEditTitle(e.target.value)}
+                        />
+                        <label htmlFor='postBody'>Post:</label>
+                        <textarea
+                            id='postBody'
+                            required
+                            value={editBody}
+                            onChange={(e) => setEditBody(e.target.value)}
+                        />
+                        <button type='submit' onClick={handleSubmit}>Submit</button>
+                    </form>
+                </>
+            ) : (
                 <>
                     <h2>Post Not Found</h2>
-                    <p>Well, that's dissapointing.</p>
+                    <p>Well, that's disappointing.</p>
                     <p>
-                        <Link to='/'>Vist Our Homepage.</Link>
+                        <Link to='/'>Visit Our Homepage</Link>
                     </p>
                 </>
-        }    
-    </main>
-  )
+            )}
+        </main>
+    )
 }
 
-export default EditPost
+export default EditPost;

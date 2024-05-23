@@ -1,23 +1,19 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 
-const useAxiosFetch = (dataUrl) => {
+const useLocalStorageFetch = (localStorageKey) => {
     const [data, setData] = useState([]);
     const [fetchError, setFetchError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         let isMounted = true;
-        const source = axios.CancelToken.source();
 
-        const fetchData = async (url) => {
+        const fetchData = () => {
             setIsLoading(true);
             try {
-                const response = await axios.get(url, {
-                    cancelToken: source.token
-                });
+                const localStorageData = JSON.parse(localStorage.getItem(localStorageKey)) || [];
                 if (isMounted) {
-                    setData(response.data);
+                    setData(localStorageData);
                     setFetchError(null);
                 }
             } catch (err) {
@@ -26,22 +22,18 @@ const useAxiosFetch = (dataUrl) => {
                     setData([]);
                 }
             } finally {
-                isMounted && setTimeout(() => setIsLoading(false), 2000);
+                isMounted && setIsLoading(false);
             }
         }
 
-        fetchData(dataUrl);
+        fetchData();
 
-        const cleanUp = () => {
-            console.log('clean up function')
+        return () => {
             isMounted = false;
-            source.cancel();
-        }
-
-        return cleanUp;
-    }, [dataUrl]);
+        };
+    }, [localStorageKey]);
 
     return { data, fetchError, isLoading };
 }
 
-export default useAxiosFetch;
+export default useLocalStorageFetch;
