@@ -12,11 +12,11 @@ import Missing from './Missing';
 import { Routes, Route } from 'react-router-dom';
 import { DataProvider } from './context/DataContext';
 
-function App() {
+function App() { //Note all contents have been moved to the DataContext file, tidying up the App.js file
   
   return (
     <div className="App">
-      <DataProvider>
+      <DataProvider> {/* The DataProvider component wraps around the entire app content. This makes the context's value (state and functions) available to all child components within the DataProvider. */}
         <Header title="React JS Blog"/>
         <Nav/>
         <Routes>
